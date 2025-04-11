@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +19,10 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +50,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.wear.compose.material3.Button
 import com.aryama0073.tentangdirikita.R
 import com.aryama0073.tentangdirikita.ui.theme.TentangDiriKitaTheme
 import java.text.SimpleDateFormat
@@ -72,6 +77,7 @@ fun MainScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenContent(modifier: Modifier = Modifier) {
     var nama by rememberSaveable { mutableStateOf("") }
@@ -88,10 +94,19 @@ fun ScreenContent(modifier: Modifier = Modifier) {
 
     var isDatepickerOpen by remember  { mutableStateOf(false) }
     var tanggallahir by rememberSaveable { mutableStateOf("") }
+    val tanggalerror = tanggallahir.isBlank()
     var date by remember { mutableLongStateOf(0) }
 
     var hobi by rememberSaveable { mutableStateOf("") }
     var hobierror by rememberSaveable { mutableStateOf(false) }
+
+    var hewan by rememberSaveable { mutableStateOf("") }
+    var hewanerror by rememberSaveable { mutableStateOf(false) }
+
+    val hewanList = listOf("Kucing", "Anjing", "Kelinci", "Burung")
+    var expanded by remember { mutableStateOf(false) }
+
+    var showResult by rememberSaveable { mutableStateOf(false) }
 
     if (isDatepickerOpen) {
         DatePickerModal(
@@ -200,6 +215,69 @@ fun ScreenContent(modifier: Modifier = Modifier) {
             ),
             modifier = Modifier.fillMaxWidth()
         )
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = hewan,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(stringResource(R.string.hewan)) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
+                isError = hewanerror,
+                supportingText = { ErrorHint(hewanerror) }
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                hewanList.forEach { item ->
+                    DropdownMenuItem(
+                        text = { Text(item) },
+                        onClick = {
+                            hewan = item
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+        Button(
+            onClick = {
+                namaerror = nama.isBlank()
+                umurerror = umur.isBlank() || umur.toIntOrNull() == null
+                hobierror = hobi.isBlank()
+                hewanerror = hewan.isBlank()
+
+                showResult = !(namaerror || umurerror || hobierror || hewanerror || tanggalerror)
+
+            },
+            modifier = Modifier.padding(top = 8.dp),
+            contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
+        ) {
+            Text(text = stringResource(R.string.submit))
+        }
+        if (showResult) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+                    .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("Nama: $nama")
+                Text("Umur: $umur")
+                Text("Tanggal Lahir: $tanggallahir")
+                Text("Gender: $gender")
+                Text("Hobi: $hobi")
+                Text("Hewan Peliharaan Favorit: $hewan")
+            }
+        }
     }
 }
 @Composable
