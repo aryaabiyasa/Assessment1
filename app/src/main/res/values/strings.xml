@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">TentangDiriKita</string>
     <string name="deskripsi_aplikasi">Aplikasi ini adalah aplikasi sederhana untuk mengelola tentang biodata kita sendiri dengan mudah, dengan tampilan yang simple. Pengguna dapat memasukkan informasi seperti nama kita, umur, tanggal lahir, jenis kelamin, hobby, hewan favorite kita.</string>
+    <string name="nama_pengguna">Nama</string>
+    <string name="umur">Umur</string>
+    <string name="tanggal_lahir">Tanggal Lahir</string>
+    <string name="input_invalid">Tidak boleh kosong.</string>
+
 </resources>
