@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -54,6 +55,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material3.Button
@@ -67,6 +69,9 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
+    var selectedOperation by rememberSaveable { mutableStateOf("") }
+    var isEnglish by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,39 +83,71 @@ fun MainScreen(navController: NavHostController) {
                     titleContentColor = MaterialTheme.colorScheme.primary
                 ),
                 actions = {
-                    IconButton(onClick = {
-                        navController.navigate(Screen.About.route)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Info,
-                            contentDescription = stringResource(R.string.tentang_aplikasi),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+
+                        ) {
+                            Switch(
+                                checked = isEnglish,
+                                onCheckedChange = { isEnglish = it }
+                            )
+                            Text(
+                                text = if (isEnglish) "ENG" else "IDN",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        IconButton(onClick = {
+                            navController.navigate(Screen.About.route)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = stringResource(R.string.tentang_aplikasi),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             )
         }
     ) { innerPadding ->
-        ScreenContent(Modifier.padding(innerPadding))
+        ScreenContent(
+            modifier = Modifier.padding(innerPadding),
+            selectedOperation = selectedOperation,
+            onOperationChange = { selectedOperation = it },
+            onReset = {
+                selectedOperation = ""
+            },
+            isEnglish = isEnglish
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenContent(modifier: Modifier = Modifier) {
+fun ScreenContent(
+    modifier: Modifier = Modifier,
+    selectedOperation: String,
+    onOperationChange: (String) -> Unit,
+    onReset: () -> Unit,
+    isEnglish: Boolean,
+) {
     var nama by rememberSaveable { mutableStateOf("") }
     var namaerror by rememberSaveable { mutableStateOf(false) }
 
     var umur by rememberSaveable { mutableStateOf("") }
     var umurerror by rememberSaveable { mutableStateOf(false) }
 
-    val radioOptions = listOf(
-        stringResource(id = R.string.pria),
-        stringResource(id = R.string.wanita)
-    )
+    val radioOptions = if (isEnglish) listOf("Male", "Female") else listOf("Pria", "Wanita")
     var gender by rememberSaveable { mutableStateOf(radioOptions[0]) }
 
-    var isDatepickerOpen by remember  { mutableStateOf(false) }
+    var isDatepickerOpen by remember { mutableStateOf(false) }
     var tanggallahir by rememberSaveable { mutableStateOf("") }
     val tanggalerror = tanggallahir.isBlank()
     var date by remember { mutableLongStateOf(0) }
@@ -118,12 +155,14 @@ fun ScreenContent(modifier: Modifier = Modifier) {
     var hobi by rememberSaveable { mutableStateOf("") }
     var hobierror by rememberSaveable { mutableStateOf(false) }
 
+    val hewanList = if (isEnglish)
+        listOf("Cat", "Dog", "Rabbit", "Bird")
+    else
+        listOf("Kucing", "Anjing", "Kelinci", "Burung")
     var hewan by rememberSaveable { mutableStateOf("") }
     var hewanerror by rememberSaveable { mutableStateOf(false) }
 
-    val hewanList = listOf("Kucing", "Anjing", "Kelinci", "Burung")
     var expanded by remember { mutableStateOf(false) }
-
     var showResult by rememberSaveable { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -142,24 +181,31 @@ fun ScreenContent(modifier: Modifier = Modifier) {
         }
     }
 
-    Column (
-    modifier = modifier.fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(16.dp),
-    verticalArrangement = Arrangement.spacedBy(12.dp),
-    horizontalAlignment = Alignment.CenterHorizontally
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(id = R.string.deskripsi_aplikasi),
-            style = MaterialTheme.typography.bodyLarge,
+            text = if (isEnglish) {
+                "This application is a simple way to manage our own biodata easily, with a clean interface."
+            } else {
+                "Aplikasi ini adalah cara sederhana untuk mengelola biodata kita sendiri dengan mudah dan tampilan yang bersih."
+            },
+            style = MaterialTheme.typography.headlineSmall.copy(fontSize = 16.sp),
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
             value = nama,
             onValueChange = { nama = it },
-            label = { Text(text = stringResource(R.string.nama_pengguna)) },
+            label = { Text(if (isEnglish) "Name" else "Nama") },
             trailingIcon = { IconPicker(namaerror, "") },
-            supportingText = { ErrorHint(namaerror) },
+            supportingText = {
+                if (namaerror) Text(if (isEnglish) "Invalid input" else "Input tidak valid")
+            },
             isError = namaerror,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -171,9 +217,11 @@ fun ScreenContent(modifier: Modifier = Modifier) {
         OutlinedTextField(
             value = umur,
             onValueChange = { umur = it },
-            label = { Text(text = stringResource(R.string.umur)) },
+            label = { Text(if (isEnglish) "Age" else "Umur") },
             trailingIcon = { IconPicker(umurerror, "") },
-            supportingText = { ErrorHint(umurerror) },
+            supportingText = {
+                if (umurerror) Text(if (isEnglish) "Invalid input" else "Input tidak valid")
+            },
             isError = umurerror,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -185,23 +233,19 @@ fun ScreenContent(modifier: Modifier = Modifier) {
         OutlinedTextField(
             value = tanggallahir,
             onValueChange = {},
-            label = { Text(text = stringResource(R.string.tanggal_lahir)) },
+            label = { Text(if (isEnglish) "Date of Birth" else "Tanggal Lahir") },
             readOnly = true,
             trailingIcon = {
-                IconButton(
-                    onClick = {
-                        isDatepickerOpen = true
-                    }
-                ) {
+                IconButton(onClick = { isDatepickerOpen = true }) {
                     Icon(
                         imageVector = Icons.Filled.DateRange,
-                        contentDescription = "Pilih Tanggal"
+                        contentDescription = if (isEnglish) "Pick Date" else "Pilih Tanggal"
                     )
                 }
             },
             modifier = Modifier.fillMaxWidth()
         )
-        Row (
+        Row(
             modifier = Modifier
                 .padding(top = 6.dp)
                 .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
@@ -224,9 +268,11 @@ fun ScreenContent(modifier: Modifier = Modifier) {
         OutlinedTextField(
             value = hobi,
             onValueChange = { hobi = it },
-            label = { Text(text = stringResource(R.string.hobi)) },
+            label = { Text(if (isEnglish) "Hobby" else "Hobi") },
             trailingIcon = { IconPicker(hobierror, "") },
-            supportingText = { ErrorHint(hobierror) },
+            supportingText = {
+                if (hobierror) Text(if (isEnglish) "Invalid input" else "Input tidak valid")
+            },
             isError = hobierror,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -243,13 +289,15 @@ fun ScreenContent(modifier: Modifier = Modifier) {
                 value = hewan,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text(stringResource(R.string.hewan)) },
+                label = { Text(if (isEnglish) "Favorite Pet" else "Hewan") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
                     .menuAnchor()
                     .fillMaxWidth(),
                 isError = hewanerror,
-                supportingText = { ErrorHint(hewanerror) }
+                supportingText = {
+                    if (hewanerror) Text(if (isEnglish) "Invalid input" else "Input tidak valid")
+                }
             )
             ExposedDropdownMenu(
                 expanded = expanded,
@@ -274,13 +322,13 @@ fun ScreenContent(modifier: Modifier = Modifier) {
                 hewanerror = hewan.isBlank()
 
                 showResult = !(namaerror || umurerror || hobierror || hewanerror || tanggalerror)
-
             },
             modifier = Modifier.padding(top = 8.dp),
             contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
         ) {
-            Text(text = stringResource(R.string.submit))
+            Text(text = if (isEnglish) "Submit" else "Kirim")
         }
+
         if (showResult) {
             Column(
                 modifier = Modifier
@@ -290,29 +338,32 @@ fun ScreenContent(modifier: Modifier = Modifier) {
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Nama: $nama")
-                Text("Umur: $umur")
-                Text("Tanggal Lahir: $tanggallahir")
-                Text("Gender: $gender")
-                Text("Hobi: $hobi")
-                Text("Hewan Peliharaan Favorit: $hewan")
+                Text("${if (isEnglish) "Name" else "Nama"}: $nama")
+                Text("${if (isEnglish) "Age" else "Umur"}: $umur")
+                Text("${if (isEnglish) "Date of Birth" else "Tanggal Lahir"}: $tanggallahir")
+                Text("${if (isEnglish) "Gender" else "Jenis Kelamin"}: $gender")
+                Text("${if (isEnglish) "Hobby" else "Hobi"}: $hobi")
+                Text("${if (isEnglish) "Favorite Pet" else "Hewan Peliharaan Favorit"}: $hewan")
             }
             Button(
                 onClick = {
                     shareData(
                         context = context,
-                        message = context.getString(R.string.bagikan_template,
-                            nama, umur, tanggallahir, gender, hobi, hewan)
+                        message = if (isEnglish)
+                            "Name: $nama\nAge: $umur\nDate of Birth: $tanggallahir\nGender: $gender\nHobby: $hobi\nFavorite Pet: $hewan"
+                        else
+                            "Nama: $nama\nUmur: $umur\nTanggal Lahir: $tanggallahir\nJenis Kelamin: $gender\nHobi: $hobi\nHewan Peliharaan Favorit: $hewan"
                     )
                 },
                 modifier = Modifier.padding(top = 8.dp),
                 contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
             ) {
-                Text(text = stringResource(R.string.bagikan))
+                Text(text = if (isEnglish) "Share" else "Bagikan")
             }
         }
     }
 }
+
 @Composable
 fun GenderOption(label: String, isSelected: Boolean, modifier: Modifier) {
     Row (
