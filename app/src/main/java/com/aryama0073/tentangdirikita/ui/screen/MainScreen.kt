@@ -21,7 +21,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -60,6 +59,9 @@ fun ScreenContent(modifier: Modifier = Modifier) {
     var nama by rememberSaveable { mutableStateOf("") }
     var namaerror by rememberSaveable { mutableStateOf(false) }
 
+    var umur by rememberSaveable { mutableStateOf("") }
+    var umurerror by rememberSaveable { mutableStateOf(false) }
+
     Column (
     modifier = modifier.fillMaxSize()
         .verticalScroll(rememberScrollState())
@@ -83,6 +85,20 @@ fun ScreenContent(modifier: Modifier = Modifier) {
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = umur,
+            onValueChange = { umur = it },
+            label = { Text(text = stringResource(R.string.umur)) },
+            trailingIcon = { IconPicker(umurerror, "") },
+            supportingText = { ErrorHint(umurerror) },
+            isError = umurerror,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
             ),
             modifier = Modifier.fillMaxWidth()
         )
