@@ -10,6 +10,8 @@
     <string name="hobi">Hobi</string>
     <string name="hewan">Hewan</string>
     <string name="submit">Submit</string>
+    <string name="bagikan">Bagikan</string>
+    <string name="bagikan_template">Yoo! Aku %1$s, dengan umur %2$s tahun, dan tanggal lahir aku yaitu %3$s, aku %4$s dan aku suka banget %5$s, juga hewan kesukaan ku adalah %6$s. </string>
     <string name="tentang_aplikasi">Tentang Aplikasi</string>
     <string name="copyright">Aplikasi sederhana yang dapat membuatkan anda biodata singkat tentang diri anda,
         dari mengisikan nama, mengisi umur, tanggal lahir, memilih jenis kelamin, hobi, dan memilih hewan favorit kita</string>

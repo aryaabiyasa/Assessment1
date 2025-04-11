@@ -1,5 +1,7 @@
 package com.aryama0073.tentangdirikita.ui.screen
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
@@ -122,6 +125,8 @@ fun ScreenContent(modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
 
     var showResult by rememberSaveable { mutableStateOf(false) }
+
+    val context = LocalContext.current
 
     if (isDatepickerOpen) {
         DatePickerModal(
@@ -292,6 +297,19 @@ fun ScreenContent(modifier: Modifier = Modifier) {
                 Text("Hobi: $hobi")
                 Text("Hewan Peliharaan Favorit: $hewan")
             }
+            Button(
+                onClick = {
+                    shareData(
+                        context = context,
+                        message = context.getString(R.string.bagikan_template,
+                            nama, umur, tanggallahir, gender, hobi, hewan)
+                    )
+                },
+                modifier = Modifier.padding(top = 8.dp),
+                contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
+            ) {
+                Text(text = stringResource(R.string.bagikan))
+            }
         }
     }
 }
@@ -351,6 +369,16 @@ fun DatePickerModal(
         }
     ) {
         DatePicker(state = datePickerState)
+    }
+}
+
+private fun shareData(context: Context, message: String) {
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, message)
+    }
+    if (shareIntent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(shareIntent)
     }
 }
 
