@@ -5,5 +5,7 @@
     <string name="umur">Umur</string>
     <string name="tanggal_lahir">Tanggal Lahir</string>
     <string name="input_invalid">Tidak boleh kosong.</string>
+    <string name="pria">Pria</string>
+    <string name="wanita">Wanita</string>
 
 </resources>
