@@ -85,11 +85,13 @@ fun ScreenContent(modifier: Modifier = Modifier) {
         stringResource(id = R.string.wanita)
     )
     var gender by rememberSaveable { mutableStateOf(radioOptions[0]) }
+
     var isDatepickerOpen by remember  { mutableStateOf(false) }
-
     var tanggallahir by rememberSaveable { mutableStateOf("") }
-
     var date by remember { mutableLongStateOf(0) }
+
+    var hobi by rememberSaveable { mutableStateOf("") }
+    var hobierror by rememberSaveable { mutableStateOf(false) }
 
     if (isDatepickerOpen) {
         DatePickerModal(
@@ -184,6 +186,20 @@ fun ScreenContent(modifier: Modifier = Modifier) {
                 )
             }
         }
+        OutlinedTextField(
+            value = hobi,
+            onValueChange = { hobi = it },
+            label = { Text(text = stringResource(R.string.hobi)) },
+            trailingIcon = { IconPicker(hobierror, "") },
+            supportingText = { ErrorHint(hobierror) },
+            isError = hobierror,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 @Composable
