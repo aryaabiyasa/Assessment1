@@ -379,13 +379,6 @@ fun IconPicker(isError: Boolean, unit: String) {
     }
 }
 
-@Composable
-fun ErrorHint(isError: Boolean) {
-    if (isError) {
-        Text(text = stringResource(R.string.input_invalid))
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(
