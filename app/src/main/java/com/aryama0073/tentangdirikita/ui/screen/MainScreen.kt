@@ -69,7 +69,6 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    var selectedOperation by rememberSaveable { mutableStateOf("") }
     var isEnglish by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
@@ -119,11 +118,6 @@ fun MainScreen(navController: NavHostController) {
     ) { innerPadding ->
         ScreenContent(
             modifier = Modifier.padding(innerPadding),
-            selectedOperation = selectedOperation,
-            onOperationChange = { selectedOperation = it },
-            onReset = {
-                selectedOperation = ""
-            },
             isEnglish = isEnglish
         )
     }
@@ -133,9 +127,6 @@ fun MainScreen(navController: NavHostController) {
 @Composable
 fun ScreenContent(
     modifier: Modifier = Modifier,
-    selectedOperation: String,
-    onOperationChange: (String) -> Unit,
-    onReset: () -> Unit,
     isEnglish: Boolean,
 ) {
     var nama by rememberSaveable { mutableStateOf("") }
